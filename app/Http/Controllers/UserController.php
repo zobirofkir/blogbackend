@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -25,6 +28,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request) : UserResource
     {
+        $this->authorize("create", User::class);
         return UserResource::make(
             User::create($request->validated())
         );
@@ -35,6 +39,7 @@ class UserController extends Controller
      */
     public function show(User $user) : UserResource
     {
+        $this->authorize("view", User::class);
         return UserResource::make($user);
     }
 
@@ -43,6 +48,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user) : UserResource
     {
+        $this->authorize("update", User::class);
         $user->update($request->validated());
         return UserResource::make(
             $user->refresh()
@@ -54,6 +60,7 @@ class UserController extends Controller
      */
     public function destroy(User $user) : bool
     {
+        $this->authorize("delete", User::class);
         return $user->delete();
     }
 }
