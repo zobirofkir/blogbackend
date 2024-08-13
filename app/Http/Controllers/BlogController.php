@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BlogRequest;
 use App\Http\Resources\BlogResource;
+use App\Jobs\BlogMailJob;
 use App\Mail\BlogMail;
 use App\Models\Blog;
 use Illuminate\Support\Str;
@@ -42,12 +43,12 @@ class BlogController extends Controller
     
         $blog = Blog::create($blogData);
     
-        // Send the email
-        Mail::to(Auth::user()->email)->send(new BlogMail($blog));
+        // Send the email, pass the user's email to the job
+        BlogMailJob::dispatch($blog, Auth::user()->email);
     
         return new BlogResource($blog);
     }
-
+    
     /**
      * Display the specified resource.
      */
