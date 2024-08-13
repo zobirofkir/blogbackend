@@ -62,7 +62,7 @@ class BlogRequestTest extends TestCase
             "description" => "this is the description",
             "slug" => Str::slug("cloud computing Zobir-" . Str::random(5))
         ];
-        $response = $this->put("api/blogs/{$blog->slug}", $data);
+        $response = $this->put("api/blogs/$blog->slug", $data);
         $response->assertStatus(200);
     }
 
