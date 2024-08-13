@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BlogRequest;
 use App\Http\Resources\BlogResource;
+use App\Mail\BlogMail;
 use App\Models\Blog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class BlogController extends Controller
 {
@@ -28,18 +30,21 @@ class BlogController extends Controller
     {
         $blogData = $request->validated();
         $blogData['user_id'] = Auth::user()->id;
-
+    
         $slug = Str::slug($blogData['title']);
         $existingSlugCount = Blog::where('slug', $slug)->count();
-
+    
         if ($existingSlugCount > 0) {
             $slug .= '-' . ($existingSlugCount + 1);
         }
-        
+    
         $blogData['slug'] = $slug;
-
+    
         $blog = Blog::create($blogData);
-
+    
+        // Send the email
+        Mail::to(Auth::user()->email)->send(new BlogMail($blog));
+    
         return new BlogResource($blog);
     }
 
