@@ -47,6 +47,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class);
+    }
+
     public function generateToken()
     {
         return $this->createToken("auth_token")->accessToken;
