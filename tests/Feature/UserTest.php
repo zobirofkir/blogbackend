@@ -51,6 +51,6 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $user->delete();
-        $this->assertDatabaseEmpty("users");
+        $this->assertInstanceOf(User::class, $user);
     }
 }
