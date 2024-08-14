@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post("login", [AuthController::class, "login"]);
+
 Route::apiResource("blogs", BlogController::class)->only(["index", "show"]);
 Route::apiResource("blogs.comments", CommentController::class)->only(["store", "index"]);
 

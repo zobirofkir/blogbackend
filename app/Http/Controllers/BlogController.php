@@ -63,23 +63,16 @@ class BlogController extends Controller
     public function update(BlogRequest $request, Blog $blog): BlogResource
     {
         // Validate and extract data
-        $blogData = $request->validated();
-    
-        // Generate slug based on the title
+        $blogData = $request->validated();    
         $slug = Str::slug($blogData['title']);
-    
         // Ensure the slug is unique
         $existingSlugCount = Blog::where('slug', $slug)->where('id', '!=', $blog->id)->count();
-    
         if ($existingSlugCount > 0) {
             $slug .= '-' . ($existingSlugCount + 1);
         }
-    
         $blogData['slug'] = $slug; // Set the generated slug
-    
         // Update the blog entry
         $blog->update($blogData);
-    
         // Return the updated blog resource
         return new BlogResource($blog->refresh());
     }
