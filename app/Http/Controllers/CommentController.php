@@ -25,12 +25,10 @@ class CommentController extends Controller
      */
     public function store(CommentRequest $request, $blogSlug)
     {
-        $user = Auth::user();
         $blog = Blog::where('slug', $blogSlug)->firstOrFail();
 
         $comment = Comment::create([
             'content' => $request->validated()['content'],
-            'user_id' => $user->id,
             'blog_id' => $blog->id
         ]);
 

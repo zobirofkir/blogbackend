@@ -17,7 +17,6 @@ class CommentResource extends JsonResource
         return [
             'id' => $this->id,
             'content' => $this->content,
-            'user_id' => $this->user_id,
             'blog' => new BlogResource($this->whenLoaded('blog')), // Include blog data
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
