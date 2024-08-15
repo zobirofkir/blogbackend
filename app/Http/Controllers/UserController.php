@@ -4,24 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
-use App\Jobs\UserMailJob;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    protected UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index() : AnonymousResourceCollection
+    public function index(): AnonymousResourceCollection
     {
-        $user = Auth::user();
-
-        if ($user->email !== 'zobirofkir19@gmail.com') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->userService->authorizeRequest();
 
         return UserResource::collection(User::all());
     }
@@ -29,34 +30,21 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request) : UserResource
+    public function store(UserRequest $request): UserResource
     {
-        $user = Auth::user();
+        $this->userService->authorizeRequest();
+        $user = $this->userService->createUser($request);
+        $this->userService->dispatchUserMailJob($user, $request->input('password'));
 
-        if ($user->email !== 'zobirofkir19@gmail.com') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $password = Hash::make($request->input('password')); // Hash the password
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => $password
-        ]);    
-        UserMailJob::dispatch($user->email, $request->input('password'));
         return UserResource::make($user);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user) : UserResource
+    public function show(User $user): UserResource
     {
-        $currentUser = Auth::user();
-
-        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->userService->authorizeRequest();
 
         return UserResource::make($user);
     }
@@ -64,38 +52,22 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $user) : UserResource
+    public function update(UserRequest $request, User $user): UserResource
     {
-        $currentUser = Auth::user();
+        $this->userService->authorizeRequest();
 
-        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $updatedData = $request->validated();
-
-        if (isset($updatedData['password'])) {
-            $updatedData['password'] = Hash::make($updatedData['password']); // Hash the new password
-        }
-
-        $user->update($updatedData);
-        
-        // Dispatch job to send the updated email and password
-        UserMailJob::dispatch($user->email, $request->input('password'));
+        $this->userService->updateUser($user, $request->validated());
+        $this->userService->dispatchUserMailJob($user, $request->input('password'));
 
         return UserResource::make($user->refresh());
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user) : bool
+    public function destroy(User $user): bool
     {
-        $currentUser = Auth::user();
-
-        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->userService->authorizeRequest();
 
         return $user->delete();
     }

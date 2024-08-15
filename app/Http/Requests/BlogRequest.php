@@ -17,11 +17,11 @@ class BlogRequest extends FormRequest
         $blogId = $this->route('blog'); // Get the blog ID from the route if it exists
 
         return [
-            'title' => 'required|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png,bmp,tiff|max:10240', // Validates image file
-            'description' => 'required|string',
+            'title' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,bmp,tiff|max:10240', // Validates image file
+            'description' => 'nullable|string',
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 Rule::unique('blogs', 'slug')->ignore($blogId)
             ],

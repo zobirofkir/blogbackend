@@ -22,6 +22,9 @@ Route::middleware("auth:api")->group(function() {
     // Only add the store, update, and destroy methods for blogs here
     Route::apiResource("blogs", BlogController::class)->only(["store", "update", "destroy"]);
 
+    // Add route for authenticated user's blogs
+    Route::get("auth/blogs", [BlogController::class, "auth"]);
+    
     // Authenticated user routes
     Route::get("auth/current", [AuthController::class, "current"]);
     Route::put("auth/update", [AuthController::class, "updateCurrentUserPassword"]);
