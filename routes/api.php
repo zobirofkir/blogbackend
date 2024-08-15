@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,8 @@ Route::post("login", [AuthController::class, "login"]);
 
 Route::apiResource("blogs", BlogController::class)->only(["index", "show"]);
 Route::apiResource("blogs.comments", CommentController::class)->only(["store", "index"]);
+
+Route::apiResource('contacts', ContactController::class);
 
 // Authenticated routes
 Route::middleware("auth:api")->group(function() {
