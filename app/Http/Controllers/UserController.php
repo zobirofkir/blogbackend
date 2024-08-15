@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Jobs\UserMailJob;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,9 +17,13 @@ class UserController extends Controller
      */
     public function index() : AnonymousResourceCollection
     {
-        return UserResource::collection(
-            User::all()
-        );
+        $user = Auth::user();
+
+        if ($user->email !== 'zobirofkir19@gmail.com') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return UserResource::collection(User::all());
     }
 
     /**
@@ -24,9 +31,20 @@ class UserController extends Controller
      */
     public function store(UserRequest $request) : UserResource
     {
-        return UserResource::make(
-            User::create($request->validated())
-        );
+        $user = Auth::user();
+
+        if ($user->email !== 'zobirofkir19@gmail.com') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $password = Hash::make($request->input('password')); // Hash the password
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => $password
+        ]);    
+        UserMailJob::dispatch($user->email, $request->input('password'));
+        return UserResource::make($user);
     }
 
     /**
@@ -34,6 +52,12 @@ class UserController extends Controller
      */
     public function show(User $user) : UserResource
     {
+        $currentUser = Auth::user();
+
+        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         return UserResource::make($user);
     }
 
@@ -42,17 +66,37 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user) : UserResource
     {
-        $user->update($request->validated());
-        return UserResource::make(
-            $user->refresh()
-        );
-    }
+        $currentUser = Auth::user();
 
+        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $updatedData = $request->validated();
+
+        if (isset($updatedData['password'])) {
+            $updatedData['password'] = Hash::make($updatedData['password']); // Hash the new password
+        }
+
+        $user->update($updatedData);
+        
+        // Dispatch job to send the updated email and password
+        UserMailJob::dispatch($user->email, $request->input('password'));
+
+        return UserResource::make($user->refresh());
+    }
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user) : bool
     {
+        $currentUser = Auth::user();
+
+        if ($currentUser->email !== 'zobirofkir19@gmail.com') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         return $user->delete();
     }
 }

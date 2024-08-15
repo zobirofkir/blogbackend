@@ -14,7 +14,7 @@ Route::apiResource("blogs.comments", CommentController::class)->only(["store", "
 
 // Authenticated routes
 Route::middleware("auth:api")->group(function() {
-    Route::apiResource("users", UserController::class)->only(["index", "show", "update", "destroy"]);
+    Route::apiResource("users", UserController::class);
     
     // Only add the store, update, and destroy methods for blogs here
     Route::apiResource("blogs", BlogController::class)->only(["store", "update", "destroy"]);

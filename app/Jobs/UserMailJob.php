@@ -2,31 +2,28 @@
 
 namespace App\Jobs;
 
-use App\Mail\BlogMail;
-use Illuminate\Bus\Queueable;
+use App\Mail\UserMail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class BlogMailJob implements ShouldQueue
+class UserMailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $blog;
-    protected $userEmail;
+    protected $email;
+    protected $password;
 
     /**
      * Create a new job instance.
-     * 
-     * @param mixed $blog
-     * @param string $userEmail
      */
-    public function __construct($blog, $userEmail)
+    public function __construct($email, $password)
     {
-        $this->blog = $blog;
-        $this->userEmail = $userEmail;
+        $this->email = $email;
+        $this->password = $password;
     }
 
     /**
@@ -34,6 +31,6 @@ class BlogMailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->userEmail)->send(new BlogMail($this->blog));
+        Mail::to($this->email)->send(new UserMail($this->email, $this->password));
     }
 }
