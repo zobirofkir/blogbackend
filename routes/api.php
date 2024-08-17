@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,8 @@ Route::apiResource("blogs.comments", CommentController::class)->only(["store", "
 
 Route::apiResource('contacts', ContactController::class);
 Route::apiResource("products", ProductController::class)->only(["index", "show"]);
+
+Route::apiResource("projects", ProjectController::class)->only(["index", "show"]);
 
 // Authenticated routes
 Route::middleware("auth:api")->group(function() {
@@ -31,6 +34,9 @@ Route::middleware("auth:api")->group(function() {
      * Create Product Resource
      */
     Route::apiResource("products", ProductController::class)->only(["store", "update", "destroy"]);
+
+    Route::apiResource("projects", ProjectController::class)->only(["store", "update", "destroy"]);
+    Route::get("/auth/projects", [ProjectController::class, "auth"]);
 
     /**
      * Get Authenticated Product
