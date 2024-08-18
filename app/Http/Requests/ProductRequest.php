@@ -26,7 +26,8 @@ class ProductRequest extends FormRequest
             "description" => "nullable|string",
             "price" => "nullable|string",
             "file_path" => "nullable|string",
-            "thumbnail" => "nullable|string"
+            "thumbnail" => "nullable|string",
+            "slug" => "nullable|string"
         ];
     }
 }

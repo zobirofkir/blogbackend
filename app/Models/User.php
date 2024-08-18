@@ -55,4 +55,13 @@ class User extends Authenticatable
     {
         return $this->createToken("auth_token")->accessToken;
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

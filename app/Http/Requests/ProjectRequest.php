@@ -25,7 +25,8 @@ class ProjectRequest extends FormRequest
             "title" => "nullable|string",
             "image" => "nullable|image|mimes:jpg,jpeg,png,bmp,tiff|max:10240",
             "description" => "nullable|string",
-            'filePath' => 'nullable|file|mimes:zip,rar|max:102400'
+            'filePath' => 'nullable|file|mimes:zip,rar|max:102400',
+            "slug" => "nullable|string"
         ];
     }
 }

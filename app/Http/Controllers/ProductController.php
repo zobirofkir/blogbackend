@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
 
 class ProductController extends Controller
 {
@@ -35,10 +36,16 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(ProductRequest $request) : ProductResource
-    {
+    { 
+        $requestValifated = $request->validated();
+
+        if (isset($requestValifated['title'])) {
+            $requestValifated['slug'] = Str::slug($requestValifated['title']);
+        }
+
         return ProductResource::make(
             Product::create(array_merge(
-                $request->validated(),
+                $requestValifated,
                 ['user_id' => Auth::id()]
             ))
         );

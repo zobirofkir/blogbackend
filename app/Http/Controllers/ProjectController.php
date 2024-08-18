@@ -8,6 +8,7 @@ use App\Models\Project;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -49,6 +50,14 @@ class ProjectController extends Controller
             $requestValifated['filePath'] = $filePath;
         }
 
+        if (isset($requestValidated['title'])) {
+            $requestValidated['slug'] = Str::slug($requestValidated['title']);
+        }
+
+        if (isset($requestValifated['title'])) {
+            $requestValifated['slug'] = Str::slug($requestValifated['title']);
+        }
+
         return ProjectResource::make(
             Project::create(array_merge(
                 $requestValifated,
@@ -70,7 +79,13 @@ class ProjectController extends Controller
      */
     public function update(ProjectRequest $request, Project $project)
     {
-        $project->update($request->validated());
+        $requestValidated = $request->validated();
+
+        if (isset($requestValifated['title'])) {
+            $requestValifated['slug'] = Str::slug($requestValifated['title']);
+        }
+        
+        $project->update($requestValidated);
         return ProjectResource::make(
             $project->refresh()
         );
