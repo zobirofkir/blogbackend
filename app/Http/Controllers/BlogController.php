@@ -24,7 +24,9 @@ class BlogController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return BlogResource::collection(Blog::all());
+        return BlogResource::collection(
+            Blog::orderBy('created_at', 'DESC')->get()
+        );
     }
 
     /**
@@ -33,7 +35,9 @@ class BlogController extends Controller
     public function auth(): AnonymousResourceCollection
     {
         return BlogResource::collection(
-            Blog::where('user_id', Auth::id())->get()
+            Blog::where('user_id', Auth::id())
+            ->orderBy('created_at', 'DESC')
+            ->get()
         );
     }
 
