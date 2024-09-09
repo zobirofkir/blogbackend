@@ -17,6 +17,7 @@ class Project extends Model
         "description",
         "filePath",
         "slug",
+        "project_url",
         "user_id"
     ];
 

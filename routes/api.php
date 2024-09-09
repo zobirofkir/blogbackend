@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
@@ -19,6 +20,8 @@ Route::apiResource('contacts', ContactController::class);
 Route::apiResource("products", ProductController::class)->only(["index", "show"]);
 
 Route::apiResource("projects", ProjectController::class)->only(["index", "show"]);
+
+Route::apiResource("messages", MessageController::class);
 
 // Authenticated routes
 Route::middleware("auth:api")->group(function() {

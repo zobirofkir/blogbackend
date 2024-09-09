@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text("image");
             $table->longText("description");
             $table->string("filePath");
+            $table->string("project_url")->default("https://zobirofkir.com");
             $table->timestamps();
         });
     }

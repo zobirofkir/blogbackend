@@ -20,7 +20,8 @@ class ProjectResource extends JsonResource
             "image" => $this->image ? asset('storage/' . $this->image) : null,
             "description" => $this->description,
             "filePath" => $this->filePath ? asset('storage/' . $this->filePath) : null,
-            "slug" => $this->slug 
+            "slug" => $this->slug ,
+            "project_url" => $this->project_url
         ];
     }
 }

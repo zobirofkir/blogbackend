@@ -62,16 +62,32 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, Product $product) : ProductResource
+    public function update(ProductRequest $request, $id)
     {
-        $product->update(array_merge(
-            $request->validated(),
-            ['user_id' => Auth::id()]
-        ));
-        
-        return ProductResource::make($product->refresh());
+        try {
+            // Find the product by ID
+            $product = Product::findOrFail($id);
+    
+            // Update the product
+            $product->update(array_merge(
+                $request->validated(),
+                ['user_id' => Auth::id()]
+            ));
+    
+            return ProductResource::make($product->refresh());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Handle the case where the product is not found
+            return response()->json([
+                'error' => 'Product not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            // Handle any other errors
+            return response()->json([
+                'error' => 'An error occurred while updating the product.'
+            ], 500);
+        }
     }
-            
+                
     /**
      * Remove the specified resource from storage.
      */
